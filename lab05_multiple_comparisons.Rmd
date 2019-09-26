@@ -1,0 +1,137 @@
+---
+title: "Lab 5 Multiple Comparisons"
+output:
+  pdf_document:
+    fig_height: 2.8
+    fig_width: 6
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+header-includes:
+  - \usepackage{booktabs}
+geometry: margin=0.6in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+We will again work with the example of babies born in December 1998.  Today we will examine the relationship between two variables in the data set:
+
+ * `apgar5_category` is a categorized version of the baby's APGAR score.  The APGAR score is a measure of the baby's health that is taken 5 minutes after birth.  Scores are between 1 and 10, with higher scores indicating better health.  APGAR scores are often categorized as either normal (score between 7 and 10), low (between 4 and 6), or critical (between 1 and 3).
+ * `birthweight` is the baby's birth weight in grams
+
+We will explore differences in mean birthweight across different APGAR categories.  Specifically, define:
+
+ * $\mu_1$ = mean birthweight for babies with a critical APGAR score.
+ * $\mu_2$ = mean birthweight for babies with a low APGAR score.
+ * $\mu_3$ = mean birthweight for babies with a normal APGAR score.
+
+We are interested in obtaining familywise confidence intervals for the pairwise differences in population means for these groups: $\mu_1 - \mu_2$, $\mu_1 - \mu_3$, and $\mu_2 - \mu_3$.
+
+The following code reads the data in and does a little clean up.
+
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(mosaic)
+
+babies <- read_csv("http://www.evanlray.com/data/misc/babies1998/babies_dec_1998.csv") %>%
+  filter(!is.na(apgar5), !is.na(birthweight)) %>%
+  mutate(
+    apgar5_category = ifelse(
+      apgar5 %in% 1:3, "critical",
+      ifelse(apgar5 %in% 4:6, "low", "normal")
+    )
+  )
+```
+
+### (a) Take a sample of total size 300 from the population, with 100 babies in each APGAR score category.
+
+I'm writing the code to do this, I just want you to read through and understand how it works:
+
+ * First, we group the babies by their APGAR score category.  All following operations will be done separately within each of those groups.
+ * Next, we take a sample of size 100 from each of those groups.  The argument `replace = FALSE` says that we don't want to have the same baby in our sample twice.  (Don't "replace" a baby we have chosen back into the population before choosing the next baby for the sample.)
+
+```{r}
+babies_sample <- babies %>%
+  group_by(apgar5_category) %>%
+  sample_n(size = 100, replace = FALSE)
+```
+
+If you want, you could double check that this worked by looking at the `babies_sample` data frame, or by using the `count` function to verify that 100 babies were sampled from each category.
+
+### (b) Find a separate confidence interval for the differences in population means for each pair of groups, with individual confidence levels of 80%.
+
+```{r}
+
+```
+
+### (c) Find a set of three confidence intervals for the differences in population means for each pair of groups, with a familywise confidence level of 80%.
+
+```{r}
+
+```
+
+### (d) In a real example, you would not have data for the full population, so you would not be able to check whether your confidence intervals actually contain the differences in population means.  However, in this case, we have data for all babies born in the U.S. in December 1998, so it is possible to calculate the true differences in population means and see whether or not our confidence intervals were successful.  The following code calculates these differences in population means.
+
+```{r}
+n <- 100
+
+babies <- babies %>% filter(!is.na(birthweight))
+
+babies_group_means <- babies %>%
+  group_by(apgar5_category) %>%
+  summarize(
+    mean_bw = mean(birthweight)
+  )
+
+babies_group_means$mean_bw[1] - babies_group_means$mean_bw[2]
+babies_group_means$mean_bw[1] - babies_group_means$mean_bw[3]
+babies_group_means$mean_bw[2] - babies_group_means$mean_bw[3]
+```
+
+So, we can see that in the population of all babies born in the U.S. in December 1998:
+
+ * the mean birth weight for babies with a critical APGAR score was about 1104 grams lower than the mean birth weight for babies with a low APGAR score;
+ * the mean birth weight for babies with a critical APGAR score was about 1846 grams lower than the mean birth weight for babies with a normal APGAR score; and
+ * the mean birth weight for babies with a low APGAR score was about 743 grams lower than the mean birth weight for babies with a normal APGAR score.
+
+#### i. Did your individual 80% confidence interval for the difference in mean birth weights for babies with critical scores and low scores contain the actual difference in population means for those groups?
+
+
+
+#### ii. Did your individual 80% confidence interval for the difference in mean birth weights for babies with critical scores and normal scores contain the actual difference in population means for those groups?
+
+
+
+#### iii. Did your individual 80% confidence interval for the difference in mean birth weights for babies with critical scores and low scores contain the actual difference in population means for those groups?
+
+
+
+#### iv. Did all three of your individual 80% confidence intervals contain the differences in group means they were estimating?
+
+
+
+#### v. Did your familywise 80% confidence interval for the difference in mean birth weights for babies with critical scores and low scores contain the actual difference in population means for those groups?
+
+
+
+#### vi. Did your familywise 80% confidence interval for the difference in mean birth weights for babies with critical scores and normal scores contain the actual difference in population means for those groups?
+
+
+
+#### vii. Did your familywise 80% confidence interval for the difference in mean birth weights for babies with critical scores and low scores contain the actual difference in population means for those groups?
+
+
+
+#### viii. Did all three of your familywise 80% confidence intervals contain the differences in group means they were estimating?
+
+
+
+### (e) Please enter your answers to part (d) in this form: https://forms.gle/FvcLgrebWxLLXo1p6
+
